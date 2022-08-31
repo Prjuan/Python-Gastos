@@ -1,4 +1,4 @@
-import sqlite3
+# import sqlite3
 
 
 # class Gastos():
@@ -22,28 +22,7 @@ import sqlite3
 #         con.commit()
 #         con.close()
 
-miConexion=sqlite3.connect("datagastos.db")
-miCursor=miConexion.cursor()
 
-    
-try:
-        
-    miCursor.execute('''
-            CREATE TABLE GASTOS (
-            ID INTEGER PRIMARY KEY AUTOINCREMENT,
-            FECHA VARCHAR(10),
-            SALIDA VARCHAR(20),
-            TIPO VARCHAR(20),
-            VEHICULO VARCHAR(10)
-            PROVEEDOR VARCHAR(50)
-            IMPORTE VARCHAR(20))  
-            ''')
-             
-    print("BBDD","BBDD creada con éxito")
-    
-except:
-        
-    print("¡Atención!","La BBDD ya existe")
 
 
 

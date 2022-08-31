@@ -5,8 +5,25 @@ from turtle import heading
 from tkinter import ttk
 import sys
 from tkinter import messagebox
-import conecc
 import sqlite3
+
+conexion=sqlite3.connect("bd1.db")
+try:
+    conexion.execute("""create table gastos (
+                              fecha text,
+                              salida text,
+                              tipo text,
+                              proveedor text,
+                              precio text
+                    )""")
+
+    print("se creo la tabla articulos")   
+
+except sqlite3.OperationalError:
+
+    print("La tabla articulos ya existe")     
+
+conexion.close()
 
 
 
@@ -27,7 +44,7 @@ class Formulario_Gastos:
         self.entryfecha.place(x=80, y=5)
         self.misalida = StringVar()
         self.lblcomprobante = Label(self.ventana , text = "Salida").place(x=5, y=25)
-        self.entrysalida = Entry(self.ventana, textvariabl = self.misalida)
+        self.entrysalida = Entry(self.ventana, textvariable = self.misalida)
         self.entrysalida.place(x=80, y=25)
         self.lbltipodegasto = Label(self.ventana , text = "Tipo de Gasto").place(x=5, y=45)
         self.radiotipovehiculo = Radiobutton(self.ventana, text="Vehiculos", variable=self.opcion, value=1, command=self.Mostrar)
@@ -64,15 +81,25 @@ class Formulario_Gastos:
     #     miCursor.execute("INSERT INTO GASTOS")
 
     def Guardar(self):
-        datos = (self.mifecha.get(), self.misalida.get(), self.opcion.get(), self.miproveedor.get(), self.miimporte.get())
-        con = sqlite3.connect("GASTOS")
-        cursor = con.cursor()
-        sql = "insert into GASTOS (fecha, salida, tipo, vehiculo, proveedor, importe) values(?, ?, ?, ?, ?, ?)"
-        cursor.execute(sql, datos)
-        con.commit()
-        con.close()
+        # datos = (self.mifecha.get(), self.misalida.get(), self.opcion.get(), self.miproveedor.get(), self.miimporte.get())
+        # con = sqlite3.connect("bd1.db")
+        # cursor = con.cursor()
+        # sql = "insert into GASTOS (fecha, salida, tipo, vehiculo, proveedor, importe) values(?, ?, ?, ?, ?, ?)"
+        # cursor.execute(sql, datos)
+        # con.commit()
+        # con.close()
+        conexion=sqlite3.connect("bd1.db")
+        conexion.execute("insert into gastos values (:m_fecha, :m_salida, :m_opcion, :m_proveedor, :m_importe)",
+                    {
+                        "m_fecha": self.mifecha.get(),
+                        "m_salida": self.misalida.get(),
+                        "m_opcion": self.text.get(),
+                        "m_proveedor": self.miproveedor.get(),
+                        "m_importe": self.miimporte.get()  
+                    })
 
-        
+        conexion.commit()
+        conexion.close()
     
     
 
