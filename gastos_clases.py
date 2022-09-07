@@ -2,11 +2,17 @@ from cgitb import enable
 from distutils.cmd import Command
 from faulthandler import disable
 from tkinter import *
-from turtle import heading
+from turtle import heading, title
 from tkinter import ttk
 import sys
 from tkinter import messagebox
 import sqlite3
+import tkinter.font as font
+
+
+
+
+
 
 conexion=sqlite3.connect("bd1.db")
 try:
@@ -14,6 +20,7 @@ try:
                               fecha text,
                               salida text,
                               tipo text,
+                              vehiculo text,
                               proveedor text,
                               precio text
                     )""")
@@ -28,10 +35,12 @@ conexion.close()
 
 
 
-class Formulario_Gastos:
+class Formulario_Gastos(Frame):
 
-    def __init__(self, master):
-        self.ventana = master
+    def __init__(self, master=None):
+        super().__init__(master,width="400", height="400")
+        self.master = master
+        self.pack()
         self.DibujarContenido()
 
         
@@ -39,40 +48,42 @@ class Formulario_Gastos:
     
     def DibujarContenido(self):
         self.opcion = IntVar()
-        self.lblfecha = Label(self.ventana , text = "Fecha").place(x=5, y=5)
+        self.lblfecha = Label(self, text = "Fecha").place(x=5, y=5)
         self.mifecha = StringVar()
-        self.entryfecha = Entry(self.ventana, textvariable = self.mifecha)
+        self.entryfecha = Entry(self, textvariable = self.mifecha)
         self.entryfecha.place(x=80, y=5)
         self.misalida = StringVar()
-        self.lblcomprobante = Label(self.ventana , text = "Salida").place(x=5, y=25)
-        self.entrysalida = Entry(self.ventana, textvariable = self.misalida)
+        self.lblcomprobante = Label(self, text = "Salida").place(x=5, y=25)
+        self.entrysalida = Entry(self, textvariable = self.misalida)
         self.entrysalida.place(x=80, y=25)
-        self.lbltipodegasto = Label(self.ventana , text = "Tipo de Gasto").place(x=5, y=45)
-        self.radiotipovehiculo = Radiobutton(self.ventana, text="Vehiculos", variable=self.opcion, value=1, command=lambda:[self.Mostrar(),self.Eleccion()])
+        self.lbltipodegasto = Label(self, text = "Tipo de Gasto").place(x=5, y=45)
+        self.radiotipovehiculo = Radiobutton(self, text="Vehiculos", variable=self.opcion, value=1, command=lambda:[self.Mostrar(),self.Eleccion()])
         self.radiotipovehiculo.place(x=5, y=70)
-        self.radiotipogenerales = Radiobutton(self.ventana, text="Generales", variable=self.opcion, value=2, command=lambda:[self.Mostrar(),self.Eleccion()])
+        self.radiotipogenerales = Radiobutton(self, text="Generales", variable=self.opcion, value=2, command=lambda:[self.Mostrar(),self.Eleccion()])
         self.radiotipogenerales.place(x=5, y=90)
-        self.radiotipopapeleria = Radiobutton(self.ventana, text="Papeleria", variable=self.opcion, value=3, command=lambda:[self.Mostrar(),self.Eleccion()])
+        self.radiotipopapeleria = Radiobutton(self, text="Papeleria", variable=self.opcion, value=3, command=lambda:[self.Mostrar(),self.Eleccion()])
         self.radiotipopapeleria.place(x=5, y=110)
-        self.menudesplegable = ttk.Combobox(self.ventana, values=["LTO 318", "OCB 012", "ICP 627", "UFC 581", "VAZ 809", "FFC 291", "KTS 665", "WSH 915"], state="disabled")
+        self.menudesplegable = ttk.Combobox(self, values=["LTO 318", "OCB 012", "ICP 627", "UFC 581", "VAZ 809", "FFC 291", "AB 154 UE", "WSH 915"], state="disabled")
         self.menudesplegable.place(x=5, y=140)
         self.miproveedor = StringVar()
-        self.entryproveedor = Entry(self.ventana, textvariable = self.miproveedor)
+        self.entryproveedor = Entry(self, textvariable = self.miproveedor)
         self.entryproveedor.place(x=5, y=170)
         self.miimporte = StringVar()
-        self.entryimporte = Entry(self.ventana, textvariable = self.miimporte)
+        self.entryimporte = Entry(self, textvariable = self.miimporte)
         self.entryimporte.place(x=5, y=190)
-        self.btncargar = Button(self.ventana,text="Cargar", command=self.Guardar)
+        self.btncargar = Button(self,text="Cargar", command=lambda:[self.Guardar(),self.Reset(),self.Ocultar_Combo()])
         self.btncargar.place(x=10, y=215)
-        self.btnsalir = Button(self.ventana,text="Salir", command=self.Salir)
+        self.btnsalir = Button(self,text="Salir", command=self.Salir)
         self.btnsalir.place(x=60, y=215)
         self.eleccion = self.Eleccion()
-        # self.eleccion = {
-        #                 "self.eleccion1" : self.radiotipovehiculo.cget("text"),
-        #                 "self.eleccion2" : self.radiotipogenerales.cget("text"),
-        #                 "self.eleccion3" : self.radiotipopapeleria.cget("text")
-        # }
-        
+        # self.consultar = Button(self.ventana, text="Consultar")
+        # self.elecvehiculo = ""
+
+    def Ocultar_Combo(self):
+        self.menudesplegable.config(state="disabled")
+
+
+
     def Mostrar(self):
         if self.opcion.get()==1:
             self.menudesplegable.config(state="readonly")
@@ -90,11 +101,12 @@ class Formulario_Gastos:
 
     def Guardar(self):        
         conexion=sqlite3.connect("bd1.db")
-        conexion.execute("insert into gastos values (:m_fecha, :m_salida, :m_opcion, :m_proveedor, :m_importe)",
+        conexion.execute("insert into gastos values (:m_fecha, :m_salida, :m_opcion, :m_vehiculo, :m_proveedor, :m_importe)",
                     {
                         "m_fecha": self.mifecha.get(),
                         "m_salida": self.misalida.get(),
                         "m_opcion": self.eleccion,
+                        "m_vehiculo": self.menudesplegable.get(),
                         "m_proveedor": self.miproveedor.get(),
                         "m_importe": self.miimporte.get()  
                     })
@@ -104,7 +116,18 @@ class Formulario_Gastos:
     # def Eliminar(self):
     #      conexion=sqlite3.connect("bd1.db")
     
-   
+    def Reset(self):
+        self.entryfecha.delete(0,END)
+        self.entrysalida.delete(0,END)
+        self.radiotipogenerales.deselect()
+        self.radiotipovehiculo.deselect()
+        self.radiotipopapeleria.deselect()
+        self.menudesplegable.set("")
+        self.entryproveedor.delete(0,END)
+        self.entryimporte.delete(0,END)
+
+    # def Validacion(self):
+
 
 
 
@@ -114,24 +137,39 @@ class Formulario_Gastos:
         sys.exit()      
 
 
-  
 
 
 
 
+
+
+################!!PAGINA PRINCICPAL!!################
+
+class Inicio(Frame):
+    def __init__(self, master=None):
+        super().__init__(master,width="700", height="700")
+        self.master1 = master
+        self.pack()
+        self.Contenido_Inicial()
+
+    def Contenido_Inicial(self):
+        self.btnfont = font.Font(size=15, weight="bold")
+        self.btncargar = Button(self,text="Cargar", bg="dark slate gray", fg="white", font=self.btnfont, command=self.Abrir_Carga)
+        self.btncargar.place(x=170, y=130, width=105, height=38)
+        self.btnconsultar = Button(self,text="Consultar", bg="dark slate gray", fg="white", font=self.btnfont)
+        self.btnconsultar.place(x=170, y=190, width=105, height=38)
+
+    def Abrir_Carga(self):
+        aplicacion1.destroy()
+        self.aplicacion = Formulario_Gastos(master=ventana)
 
 
         
-                
-
-
-
-
-
-
-
 ventana = Tk()
-ventana.title("CARGA DE GASTOS")
-ventana.geometry("400x400")
-aplicacion = Formulario_Gastos(ventana)
+ventana.config(bg="blue")
+ventana.title("APP GASTOS")
+# aplicacion = Formulario_Gastos(master=ventana) 
+aplicacion1 = Inicio(master=ventana) 
+aplicacion1.config(width="400", height="400", bg="bisque")
 ventana.mainloop()
+
