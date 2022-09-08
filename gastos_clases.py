@@ -71,7 +71,7 @@ class Formulario_Gastos(Frame):
         self.miimporte = StringVar()
         self.entryimporte = Entry(self, textvariable = self.miimporte)
         self.entryimporte.place(x=5, y=190)
-        self.btncargar = Button(self,text="Cargar", command=lambda:[self.Guardar(),self.Reset(),self.Ocultar_Combo()])
+        self.btncargar = Button(self,text="Cargar", command=self.Validacion)
         self.btncargar.place(x=10, y=215)
         self.btnsalir = Button(self,text="Salir", command=self.Salir)
         self.btnsalir.place(x=60, y=215)
@@ -99,7 +99,7 @@ class Formulario_Gastos(Frame):
             self.eleccion = "Papeleria"
             return self.eleccion
 
-    def Guardar(self):        
+    def Guardar(self):
         conexion=sqlite3.connect("bd1.db")
         conexion.execute("insert into gastos values (:m_fecha, :m_salida, :m_opcion, :m_vehiculo, :m_proveedor, :m_importe)",
                     {
@@ -126,9 +126,18 @@ class Formulario_Gastos(Frame):
         self.entryproveedor.delete(0,END)
         self.entryimporte.delete(0,END)
 
-    # def Validacion(self):
-
-
+    def Validacion(self):
+        try:
+            int(self.mifecha.get())
+            str(self.misalida.get())
+            str(self.miproveedor.get())
+            float(self.miimporte.get())
+        except:
+            messagebox.showinfo(message="Tiene un error en algun campo")
+        else:
+            self.Guardar()
+            self.Reset()
+            self.Ocultar_Combo()
 
 
 
@@ -155,9 +164,9 @@ class Inicio(Frame):
     def Contenido_Inicial(self):
         self.btnfont = font.Font(size=15, weight="bold")
         self.btncargar = Button(self,text="Cargar", bg="dark slate gray", fg="white", font=self.btnfont, command=self.Abrir_Carga)
-        self.btncargar.place(x=170, y=130, width=105, height=38)
+        self.btncargar.place(x=165, y=130, width=105, height=38)
         self.btnconsultar = Button(self,text="Consultar", bg="dark slate gray", fg="white", font=self.btnfont)
-        self.btnconsultar.place(x=170, y=190, width=105, height=38)
+        self.btnconsultar.place(x=165,y=190, width=105, height=38)
 
     def Abrir_Carga(self):
         aplicacion1.destroy()
