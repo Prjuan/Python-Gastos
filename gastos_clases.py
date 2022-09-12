@@ -165,12 +165,32 @@ class Inicio(Frame):
         self.btnfont = font.Font(size=15, weight="bold")
         self.btncargar = Button(self,text="Cargar", bg="dark slate gray", fg="white", font=self.btnfont, command=self.Abrir_Carga)
         self.btncargar.place(x=165, y=130, width=105, height=38)
-        self.btnconsultar = Button(self,text="Consultar", bg="dark slate gray", fg="white", font=self.btnfont)
+        self.btnconsultar = Button(self,text="Consultar", bg="dark slate gray", fg="white", font=self.btnfont, command=self.Abrir_Vista)
         self.btnconsultar.place(x=165,y=190, width=105, height=38)
+
+    def Abrir_Vista(self):
+        aplicacion1.destroy()
+        self.aplicacion2 = Vista(master=ventana)
 
     def Abrir_Carga(self):
         aplicacion1.destroy()
         self.aplicacion = Formulario_Gastos(master=ventana)
+
+################!!PAGINA 3 (REPORTE Y VISTA DE DATOS)!!################
+
+class Vista(Frame):
+    def __init__(self, master=None):
+        super().__init__(master,width="400", height="400")
+        self.master2 = master
+        self.pack()
+        self.Contenido_Vista()
+
+
+    # def Contenido_Vista(self):
+    #     self.tabla = ttk.Treeview(self, columns=6)
+    #     self.tabla.grid(row=)
+
+  
 
 
         
@@ -180,5 +200,7 @@ ventana.title("APP GASTOS")
 # aplicacion = Formulario_Gastos(master=ventana) 
 aplicacion1 = Inicio(master=ventana) 
 aplicacion1.config(width="400", height="400", bg="bisque")
+# aplicacion2 = Vista(master=ventana) 
+# aplicacion2.config(width="400", height="400", bg="blue")
 ventana.mainloop()
 
